@@ -1,6 +1,7 @@
 import sys
 import tweepy
 import codecs
+import re
 from time import clock
 
 '''OAuth Authentication'''
@@ -36,20 +37,23 @@ class StreamListenerWei(tweepy.StreamListener):
     def on_status(self, status):
         try:
              tweet = status.text.encode('utf-8')
-             # tweet = tweet.replace('\n', '\\n')
-             text = status.text
+             tweet = tweet.replace('\n', '\\n')
+             tweet = re.sub(r"http\S+", "", tweet)
+             tweet = re.sub(r"@\S+", "", tweet)
              user = status.author.screen_name.encode('utf-8')
              userid = status.author.id
              time = status.created_at
-             source = status.source
-             tweetid = status.id
-             retweet = status.retweet_count
-             favorite = status.favorite_count
+             # location = user.location
+             
+             # hashtags = []
+ #             for hashtag in tweet['entities']['hashtags']:
+ #                 hashtags.append(hashtag['text'])
+
              timePass = clock()-start
              if timePass%60==0:
                  print "I have been working for", timePass, "seconds."
              if not ('RT @' in tweet) :	# Exclude re-tweets
-                 print >>file, "%s,%s,%s,%d,%d,|%s|,%s" % (userid, user, time, retweet,favorite,text, source)
+                 print >>file, "%s;%s;%s;%s" % (userid, user, time, tweet)
              
         except Exception, e:
             print >> sys.stderr, 'Encountered Exception:', e
