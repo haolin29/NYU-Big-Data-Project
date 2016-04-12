@@ -62,8 +62,14 @@ hive> create external table primary (
     location '/user/hj836/primary/';
 
 // create table for streaming data
-
- create external table stream(userid string, user string, time string, tweet string) row format delimited fields terminated by '\073' lines terminated by '\n' location '/user/cloudera/streamTweets/';
+hive> create external table streamming(
+    userid string, 
+    user string, 
+    time string, 
+    tweet string) 
+    row format delimited fields terminated by '\073' 
+    lines terminated by '\n' 
+    location '/user/cloudera/streamTweets/';
 
 ```
 
