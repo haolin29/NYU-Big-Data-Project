@@ -16,7 +16,7 @@
 install it from source, download the source from http://pypi.python.org/pypi/tweepy then run something like:
 
 ```
-tar xzvf tweepy-1.7.1.tar.gz
+tar -xzvf tweepy-1.7.1.tar.gz
 
 cd tweepy-1.7.1
 
