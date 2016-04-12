@@ -1,14 +1,12 @@
 # Predicting US Election of 2016 using Social media
 
 ## Data source
-1. Twitter
-2. Google+
-3. Facebook
+1. Twitter Streaming API
+2. Primary Election 
+3. Twitter REST API
 
-## Technical Stack
-
-### ETL
-Flume
+## ETL
+~~Flume
 
 Why Flume?
 Flume is a highly reliable, distributed, and configurable tool. It is principally designed to copy streaming data (log data) from various web servers to HDFS.
@@ -40,9 +38,9 @@ _Some of the notable features of Flume are as follows_
 
 - Flume supports multi-hop flows, fan-in fan-out flows, contextual routing, etc.
 
-- Flume can be scaled horizontally.
+- Flume can be scaled horizontally.~~
 
-## Crawl the data
+### Crawl the data
 
 1.pip module
 `sudo easy_install pip`
@@ -58,6 +56,41 @@ cd tweepy-1.7.1
 
 python setup.py install
 ```
+
+### Store to HDFS
+```
+$ hdfs dfs -mkdir hiveInput
+$ hdfs dfs -mkdir impalaInput
+
+// Get data ready for Hive tests
+$ hdfs dfs -put smallWeather1.txt hiveInput
+$ hdfs dfs -ls hiveInput 
+$ hdfs dfs -cat hiveInput/smallWeather1.txt
+
+// create a hive external table
+$ beeline -u jdbc:hive2://quickstart:10000/default -n cloudera -d org.apache.hive.jdbc.HiveDriver
+hive> create external table tweets (
+    username string,
+    date string,
+    retweets int,
+    favorites int,
+    text string,
+    geo string,
+    mentions string,
+    hashtags string,
+    id string,
+    permalink string)
+    row format delimited fields terminated by '\073'
+    lines terminated by '\n'
+    location '/user/hj836/hiveInput/';
+
+hive> show tables;
+hive> describe w1;
+
+
+
+```
+
 
 
 
