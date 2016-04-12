@@ -16,7 +16,7 @@
 install it from source, download the source from http://pypi.python.org/pypi/tweepy then run something like:
 
 ```
-tar xzvf tweepy-1.7.1.tar.gz
+tar -xzvf tweepy-1.7.1.tar.gz
 
 cd tweepy-1.7.1
 
@@ -62,8 +62,14 @@ hive> create external table primary (
     location '/user/hj836/primary/';
 
 // create table for streaming data
-
- create external table stream(userid string, user string, time string, tweet string) row format delimited fields terminated by '\073' lines terminated by '\n' location '/user/cloudera/streamTweets/';
+hive> create external table streamming(
+    userid string, 
+    user string, 
+    time string, 
+    tweet string) 
+    row format delimited fields terminated by '\073' 
+    lines terminated by '\n' 
+    location '/user/cloudera/streamTweets/';
 
 ```
 
