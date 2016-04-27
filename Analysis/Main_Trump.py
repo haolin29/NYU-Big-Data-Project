@@ -3,17 +3,17 @@ import json
 import urllib2
 import pprint
 import json
+# import happybase
 import traceback
-#import happybase
 import unirest
 import csv
-
+from httplib import HTTPException
 # Authentication details. To  obtain these visit dev.twitter.com
 consumer_key = '2BVkDqAPinK9hOQ4NjnaqWXYh'
 consumer_secret = 'E0GvBjF1mz9FhW337srR8t1n1f78OdYL6cOvWmWqY81B4GV8AP'
 access_token = '4005103452-6sKsWEnePpllG6XQRHnQeE3lK6BMP9xOI4UF585'
 access_token_secret = '56dAfGrzb59EiSEkpNdwsYlvVmntVgTCfaoEEtbltr6Do'
-contestant = 'Hillary Clinton'
+contestant = 'Donald Trump'
 tweetLocation = 'undefined'
 
 # This is the listener, responsible for receiving data
@@ -23,7 +23,7 @@ class StdOutListener(tweepy.StreamListener):
 		decoded = json.loads(data)
 		tweetLocation = 'undefined'
 		
-		#print '-------------------------------------------------------------'
+		# print '-------------------------------------------------------------'
 		if decoded['user']['location'] is not None:
 			try:
 				add = urllib2.quote(decoded['user']['location'])
@@ -36,7 +36,7 @@ class StdOutListener(tweepy.StreamListener):
 					for address_component in result['address_components']:
 						if address_component['types'] == ['administrative_area_level_1', 'political']:
 							tweetLocation = address_component['long_name']
-							#print 'tweetLocation : %s' % tweetLocation
+							# print 'tweetLocation : %s' % tweetLocation
 							break
 				req.close()
 				# Also, we convert UTF-8 to ASCII ignoring all bad characters sent by users
@@ -56,25 +56,17 @@ class StdOutListener(tweepy.StreamListener):
 					response_body = json.loads(response.raw_body)
 					sentiment_result = response_body['result']['sentiment'].encode('ascii', 'ignore')
 					#print sentiment_result
-					#connection = happybase.Connection('localhost')
-					#table = connection.table('tweets')
-					
-					#print decoded['id_str'],contestant,decoded['text'].encode('ascii', 'ignore'),sentiment_result,decoded['source'].encode('ascii', 'ignore')
-					#table.put(decoded['id_str'],{'tweet_details:contestant':contestant,'tweet_details:text':decoded['text'].encode('ascii', 'ignore'),'tweet_details:sentiment':sentiment_result,'tweet_details:source':decoded['source'].encode('ascii', 'ignore')})
-					
-					#print decoded['id_str'],decoded['created_at'].encode('ascii', 'ignore')
-					#table.put(decoded['id_str'],{'tweet_details:createdat':decoded['created_at'].encode('ascii', 'ignore')})
-					
-					#print decoded['id_str'],tweetLocation,decoded['user']['id_str']
-					#table.put(decoded['id_str'],{'tweet_details:userlocation':tweetLocation,'tweet_details:userid':decoded['user']['id_str']})
-					
-					# convert the json to csv
-					with open('hilary.csv', 'a') as f:
+					# connection = happybase.Connection('localhost')
+					# table = connection.table('tweets')
+					# print decoded['id_str'],contestant,decoded['text'].encode('ascii', 'ignore'),sentiment_result,decoded['source'].encode('ascii', 'ignore')
+					# table.put(decoded['id_str'],{'tweet_details:contestant':contestant,'tweet_details:text':decoded['text'].encode('ascii', 'ignore'),'tweet_details:sentiment':sentiment_result,'tweet_details:source':decoded['source'].encode('ascii', 'ignore')})
+					# print decoded['id_str'],decoded['created_at'].encode('ascii', 'ignore')
+					# table.put(decoded['id_str'],{'tweet_details:createdat':decoded['created_at'].encode('ascii', 'ignore')})
+					# print decoded['id_str'],tweetLocation,decoded['user']['id_str']
+					# table.put(decoded['id_str'],{'tweet_details:userlocation':tweetLocation,'tweet_details:userid':decoded['user']['id_str']})
+					with open('trump.csv', 'a') as f:
 						writer = csv.writer(f)
 						writer.writerow([decoded['user']['id_str'],contestant,sentiment_result,tweetLocation,decoded['created_at'].encode('ascii', 'ignore')])
-					
-
-					
 				except Exception as error:
 					traceback.print_exc()
 					print 'Exception in DatumBox or DB insert'
@@ -85,14 +77,21 @@ class StdOutListener(tweepy.StreamListener):
 				print 'Exception in location!!'
 
 
-
 if __name__ == '__main__':
 	l = StdOutListener()
 	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 	auth.set_access_token(access_token, access_token_secret)
-	
 	print "Showing all new tweets :"
-	stream = tweepy.Stream(auth, l)
-	stream.filter(track=['@HillaryClinton', '@AllThingsHill', '@HRClinton', '#Hillary', '#Hillary2016'])
+	while True:
+		try:
+			stream = tweepy.Stream(auth, l)
+			stream.filter(track=['@realDonaldTrump','#Trump2016', '#AbsolutelyTrump', '#Trump', '#MakeAmericaGreatAgain'])
+		except HTTPException:
+			# Oh well, reconnect and keep trucking
+			continue
+		except KeyboardInterrupt:
+			# Or however you want to exit this loop
+			stream.disconnect()
+			break
 	
 #follow	: Trump 25073877, HClinton 1339835893, PresElectNews 1838617063

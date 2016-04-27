@@ -13,7 +13,7 @@ consumer_key = '2BVkDqAPinK9hOQ4NjnaqWXYh'
 consumer_secret = 'E0GvBjF1mz9FhW337srR8t1n1f78OdYL6cOvWmWqY81B4GV8AP'
 access_token = '4005103452-6sKsWEnePpllG6XQRHnQeE3lK6BMP9xOI4UF585'
 access_token_secret = '56dAfGrzb59EiSEkpNdwsYlvVmntVgTCfaoEEtbltr6Do'
-contestant = 'Hillary Clinton'
+contestant = 'Bernie Sanders'
 tweetLocation = 'undefined'
 
 # This is the listener, responsible for receiving data
@@ -69,7 +69,7 @@ class StdOutListener(tweepy.StreamListener):
 					#table.put(decoded['id_str'],{'tweet_details:userlocation':tweetLocation,'tweet_details:userid':decoded['user']['id_str']})
 					
 					# convert the json to csv
-					with open('hilary.csv', 'a') as f:
+					with open('bernie.csv', 'a') as f:
 						writer = csv.writer(f)
 						writer.writerow([decoded['user']['id_str'],contestant,sentiment_result,tweetLocation,decoded['created_at'].encode('ascii', 'ignore')])
 					
@@ -93,6 +93,6 @@ if __name__ == '__main__':
 	
 	print "Showing all new tweets :"
 	stream = tweepy.Stream(auth, l)
-	stream.filter(track=['@HillaryClinton', '@AllThingsHill', '@HRClinton', '#Hillary', '#Hillary2016'])
+	stream.filter(track=['@BernieSanders', '@SenSanders', 'Bernie Sanders'])
 	
 #follow	: Trump 25073877, HClinton 1339835893, PresElectNews 1838617063
