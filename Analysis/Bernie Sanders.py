@@ -7,6 +7,7 @@ import traceback
 #import happybase
 import unirest
 import csv
+import daemon
 
 # Authentication details. To  obtain these visit dev.twitter.com
 consumer_key = '2BVkDqAPinK9hOQ4NjnaqWXYh'
@@ -85,14 +86,14 @@ class StdOutListener(tweepy.StreamListener):
 				print 'Exception in location!!'
 
 
-
-if __name__ == '__main__':
-	l = StdOutListener()
-	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-	auth.set_access_token(access_token, access_token_secret)
-	
-	print "Showing all new tweets :"
-	stream = tweepy.Stream(auth, l)
-	stream.filter(track=['@BernieSanders', '@SenSanders', 'Bernie Sanders'])
+with daemon.DaemonContext():
+	if __name__ == '__main__':
+		l = StdOutListener()
+		auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+		auth.set_access_token(access_token, access_token_secret)
+		
+		print "Showing all new tweets :"
+		stream = tweepy.Stream(auth, l)
+		stream.filter(track=['@BernieSanders', '@SenSanders', 'Bernie Sanders'])
 	
 #follow	: Trump 25073877, HClinton 1339835893, PresElectNews 1838617063
