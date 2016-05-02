@@ -42,7 +42,7 @@ hive> create external table tweets (
     permalink string)
     row format delimited fields terminated by '\073'
     lines terminated by '\n'
-    location '/user/hj836/hiveInput/';
+    location '/user/cloudera/data/';
 
 hive> show tables;
 hive> describe tweets;
@@ -70,7 +70,6 @@ hive> create external table streamming(
     row format delimited fields terminated by '\073' 
     lines terminated by '\n' 
     location '/user/cloudera/streamTweets/';
-
 ```
 
 
