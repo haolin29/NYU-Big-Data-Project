@@ -127,14 +127,6 @@ group by contestant, substr(created_at, 4, 7), substr(created_at, 11, 3), LOWER(
 
 
 
-## How to Query
-
-We use Hive to query data.
-
-Why Hive?
-Additionally, some of the fields may be arbitrarily complex. The hashtags field is an array of all the hashtags present in the tweets, but most RDBMS’s do not support arrays as a column type. 
-This semi-structured quality of the data makes the data very difficult to query in a traditional RDBMS. Hive can handle this data much more gracefully.
-
 
 
 
