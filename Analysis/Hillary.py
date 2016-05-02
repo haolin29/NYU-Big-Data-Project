@@ -4,7 +4,6 @@ import urllib2
 import pprint
 import json
 import traceback
-#import happybase
 import unirest
 import csv
 
@@ -23,7 +22,6 @@ class StdOutListener(tweepy.StreamListener):
 		decoded = json.loads(data)
 		tweetLocation = 'undefined'
 		
-		#print '-------------------------------------------------------------'
 		if decoded['user']['location'] is not None:
 			try:
 				add = urllib2.quote(decoded['user']['location'])
@@ -41,8 +39,6 @@ class StdOutListener(tweepy.StreamListener):
 				req.close()
 				# Also, we convert UTF-8 to ASCII ignoring all bad characters sent by users
 				try:
-					#print 'tweetLocation : %s' % tweetLocation
-					#print '@%s: %s: %s: %s' % (decoded['user']['screen_name'],decoded['user']['location'], decoded['coordinates'], decoded['text'].encode('ascii', 'ignore'))
 					response = unirest.post("https://community-sentiment.p.mashape.com/text/",
 					headers={
 					"X-Mashape-Key": "H7cPnOjDcBmshbpL4XETuuiqneyKp1nfsVUjsn7g9Nxuvma6gg",
@@ -55,19 +51,7 @@ class StdOutListener(tweepy.StreamListener):
 					)
 					response_body = json.loads(response.raw_body)
 					sentiment_result = response_body['result']['sentiment'].encode('ascii', 'ignore')
-					#print sentiment_result
-					#connection = happybase.Connection('localhost')
-					#table = connection.table('tweets')
-					
-					#print decoded['id_str'],contestant,decoded['text'].encode('ascii', 'ignore'),sentiment_result,decoded['source'].encode('ascii', 'ignore')
-					#table.put(decoded['id_str'],{'tweet_details:contestant':contestant,'tweet_details:text':decoded['text'].encode('ascii', 'ignore'),'tweet_details:sentiment':sentiment_result,'tweet_details:source':decoded['source'].encode('ascii', 'ignore')})
-					
-					#print decoded['id_str'],decoded['created_at'].encode('ascii', 'ignore')
-					#table.put(decoded['id_str'],{'tweet_details:createdat':decoded['created_at'].encode('ascii', 'ignore')})
-					
-					#print decoded['id_str'],tweetLocation,decoded['user']['id_str']
-					#table.put(decoded['id_str'],{'tweet_details:userlocation':tweetLocation,'tweet_details:userid':decoded['user']['id_str']})
-					
+										
 					# convert the json to csv
 					with open('hilary.csv', 'a') as f:
 						writer = csv.writer(f)
@@ -78,7 +62,6 @@ class StdOutListener(tweepy.StreamListener):
 				except Exception as error:
 					traceback.print_exc()
 					print 'Exception in DatumBox or DB insert'
-				#print '-------------------------------------------------------------'
 				return True
 			except Exception as error:
 				traceback.print_exc()

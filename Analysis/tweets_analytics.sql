@@ -29,16 +29,20 @@ where created_at is not null
 group by contestant, substr(created_at, 4, 7), substr(created_at, 11, 3), LOWER(sentiment)
 ;
 
+select contestant, trim(substr(created_at,4,7)) as date, count(*) as count
+from streaming
+where created_at is not null
+group by contestant, substr(created_at, 4, 7)
+;
+
+select contestant, trim(substr(created_at,4,7)) as date, lower(sentiment) as sentiment, count(*) as count
+from streaming
+where created_at is not null
+group by contestant, substr(created_at, 4, 7), lower(sentiment)
+;
+
 
 -- output select result to local 
-
-INSERT OVERWRITE LOCAL DIRECTORY '/home/cloudera/Desktop/Share/hive' 
-ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' 
-select contestant, LOWER(user_location), substr(created_at, 4, 7), count(*)
-from streaming
-where created_at is not null and user_location != 'undefined' and lower(sentiment)='positive'
-group by contestant, LOWER(user_location), substr(created_at, 4, 7)
-;
 
 
 hive -e "select contestant, LOWER(user_location), substr(created_at, 4, 7), count(*) from streaming where created_at is not null and user_location != 'undefined' and lower(sentiment)='positive' group by contestant, LOWER(user_location), substr(created_at, 4, 7)"| sed 's/[\t]/,/g'  >> positive.csv
