@@ -1,0 +1,98 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf340
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 $ hdfs dfs -mkdir primary\
+$ hdfs dfs -put primary_results.csv primary\
+\
+$ beeline -u jdbc:hive2://quickstart:10000/default -n cloudera -d org.apache.hive.jdbc.HiveDriver\
+0: jdbc:hive2://quickstart:10000/default> create external table primary_result(state string, state_abbr string, county string, fips int, party string, candidate string, votes int, fraction_votes double) \
+	row format delimited fields terminated by ',' \
+	location '/user/cloudera/primary/'; \
+\
+No rows affected (0.161 seconds)\
+\
+0: jdbc:hive2://quickstart:10000/default> create table candidate_rate as select candidate, sum(fraction_votes)*1.0/count(candidate) as rate \
+	from primary_result \
+	group by candidate \
+	order by rate desc;\
+0: jdbc:hive2://quickstart:10000/default> select * from candidate_rate;\
++---------------------------+------------------------+--+\
+| candidate_rate.candidate  |  candidate_rate.rate   |\
++---------------------------+------------------------+--+\
+| Hillary Clinton           | 0.566290519217842      |\
+| Bernie Sanders            | 0.39789049737966836    |\
+| Donald Trump              | 0.3964210363104724     |\
+| Ted Cruz                  | 0.3167810179585328     |\
+| Marco Rubio               | 0.13439608241970594    |\
+| John Kasich               | 0.08244987761297122    |\
+| Ben Carson                | 0.06947526402380948    |\
+| Jeb Bush                  | 0.04472250128571427    |\
+| Rand Paul                 | 0.034244897959183666   |\
+| Mike Huckabee             | 0.02406122448979591    |\
+| Carly Fiorina             | 0.02222750781481481    |\
+| Chris Christie            | 0.01789083838888889    |\
+| Rick Santorum             | 0.009989795918367354   |\
+| Martin O'Malley           | 0.008214285714285717   |\
+|  No Preference            | 0.006875               |\
+|  Uncommitted              | 4.5918367346938773E-4  |\
+| candidate                 | NULL                   |\
++---------------------------+------------------------+--+\
+17 rows selected (0.135 seconds)\
+\
+0: jdbc:hive2://quickstart:10000/default> create table party_candidate as select party, candidate \
+	from primary_result \
+	group by party, candidate;\
+0: jdbc:hive2://quickstart:10000/default> select * from party_candidate;\
++------------------------+----------------------------+--+\
+| party_candidate.party  | party_candidate.candidate  |\
++------------------------+----------------------------+--+\
+| Democrat               |  No Preference             |\
+| Democrat               |  Uncommitted               |\
+| Democrat               | Bernie Sanders             |\
+| Democrat               | Hillary Clinton            |\
+| Democrat               | Martin O'Malley            |\
+| Republican             | Ben Carson                 |\
+| Republican             | Carly Fiorina              |\
+| Republican             | Chris Christie             |\
+| Republican             | Donald Trump               |\
+| Republican             | Jeb Bush                   |\
+| Republican             | John Kasich                |\
+| Republican             | Marco Rubio                |\
+| Republican             | Mike Huckabee              |\
+| Republican             | Rand Paul                  |\
+| Republican             | Rick Santorum              |\
+| Republican             | Ted Cruz                   |\
+| party                  | candidate                  |\
++------------------------+----------------------------+--+\
+17 rows selected (0.087 seconds)\
+0: jdbc:hive2://quickstart:10000/default> create table party_candidate_rate as select party, candidate_rate.candidate, rate \
+	from party_candidate, candidate_rate \
+	where party_candidate.candidate=candidate_rate.candidate \
+	order by party, rate desc;\
+0: jdbc:hive2://quickstart:10000/default> select * from party_candidate_rate;\
++-----------------------------+---------------------------------+----------------------------+--+\
+| party_candidate_rate.party  | party_candidate_rate.candidate  | party_candidate_rate.rate  |\
++-----------------------------+---------------------------------+----------------------------+--+\
+| Democrat                    | Hillary Clinton                 | 0.566290519217842          |\
+| Democrat                    | Bernie Sanders                  | 0.39789049737966836        |\
+| Democrat                    | Martin O'Malley                 | 0.008214285714285717       |\
+| Democrat                    |  No Preference                  | 0.006875                   |\
+| Democrat                    |  Uncommitted                    | 4.5918367346938773E-4      |\
+| Republican                  | Donald Trump                    | 0.3964210363104724         |\
+| Republican                  | Ted Cruz                        | 0.3167810179585328         |\
+| Republican                  | Marco Rubio                     | 0.13439608241970594        |\
+| Republican                  | John Kasich                     | 0.08244987761297122        |\
+| Republican                  | Ben Carson                      | 0.06947526402380948        |\
+| Republican                  | Jeb Bush                        | 0.04472250128571427        |\
+| Republican                  | Rand Paul                       | 0.034244897959183666       |\
+| Republican                  | Mike Huckabee                   | 0.02406122448979591        |\
+| Republican                  | Carly Fiorina                   | 0.02222750781481481        |\
+| Republican                  | Chris Christie                  | 0.01789083838888889        |\
+| Republican                  | Rick Santorum                   | 0.009989795918367354       |\
+| party                       | candidate                       | NULL                       |\
++-----------------------------+---------------------------------+----------------------------+--+\
+17 rows selected (0.126 seconds)\
+}
